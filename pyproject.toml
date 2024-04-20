@@ -1,0 +1,19 @@
+[tool.pytest.ini_options]
+addopts = "-q --doctest-modules --cov=./skeleton --cov-report html:tests/reports/coverage-html --cov-report term-missing --ignore=docs/ --ignore=venv/ --durations=3 --timeout=30 -p no:warnings"
+doctest_encoding = "utf-8"
+
+[pydocstyle]
+match_dir = "skeleton"
+ignore = "D104, D105, D107, D301, D413, D203, D212, D100"
+
+[isort]
+import_heading_stdlib = "Core Library modules"
+import_heading_thirdparty = "Third party modules"
+import_heading_firstparty = "First party modules"
+import_heading_localfolder = "Local modules"
+include_trailing_comma = true
+indent = '    '
+known_third_party = "PIL,click,plotext,pytest,requests,setuptools,xprintidle"
+length_sort = 0
+line_length = 80
+multi_line_output = 3

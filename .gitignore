@@ -1,0 +1,31 @@
+# databases
+db/*.db
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*__pycache__/
+**/__pycache__
+*.py[cod]
+*$py.class
+
+# Distribution / packaging
+build/
+dist/
+sdist/
+*.egg-info/
+
+# Unit test / coverage reports
+.cache
+.coverage
+coverage_report/
+.pytest_cache/
+.mypy_cache/
+.tox
+
+# Misc
+.vscode/
+.DS_Store
+
+# Virtual Environments
+.venv
+venv/
