@@ -1,7 +1,7 @@
 """populate configs
 
-Revision ID: 67ef9cbe1976
-Revises: 9d5bca9a7d3e
+Revision ID: 2
+Revises: 1
 Create Date: 2023-10-29 14:33:01.488758
 
 """
@@ -12,13 +12,12 @@ import os
 from typing import Sequence, Union
 
 from alembic import op
-import sqlalchemy as sa
 
-from skeleton.configs.models import Config
+from skeleton.models import Config
 
 # revision identifiers, used by Alembic.
-revision: str = '67ef9cbe1976'
-down_revision: Union[str, None] = '9d5bca9a7d3e'
+revision: str = "2"
+down_revision: Union[str, None] = "1"
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 

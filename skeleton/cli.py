@@ -3,42 +3,51 @@
 from dataclasses import dataclass, field
 
 import click
+import pprint
 
 from skeleton import console, database
 from skeleton.database import get_dsn
 
 from skeleton.configs.commands import configs
+from skeleton.configs import crud as configs_crud
 
 
 @dataclass()
 class RunCmd:
-    debug: bool
-    test: bool
-    configs_db: str
+    config: object = None
+    debug: bool = False
+    db: str
 
 
 @click.group("run")
+@click.option("-c", "--config", default=None, help="Config name or config id.")
 @click.option("-d", "--debug", is_flag=True, default=False, help="Show debug outputs.")
-@click.option("-t", "--test", is_flag=True, default=False, help="Use testing mode.")
 @click.pass_context
-def run(ctx, debug, test):
+def run(ctx, config, debug):
     """
     Skeleton - python cli template
 
     \b
     To manage configs, use `skeleton configs`
-
-    For testing (fake data) use --test
     """
-    data_dsn = get_dsn("configs", test)
-    configs_db = next(database.get_db(debug, data_dsn))
-    ctx.obj = RunCmd(debug, test, configs_db)
-    if test or debug:
-        console.test_msg("Using Test Databases")
+    data_dsn = get_dsn("configs")
+    db = next(database.get_db(debug, data_dsn))
+
+    if isinstance(config, int):
+        _config = configs_crud.get_config(db, config)
+    elif isinstance(config, str):
+        _config = configs_crud.get_config_by_name(db, config)
+    else
+        _config = None
+
+    ctx.obj = RunCmd(_config, debug, db)
+
+#    if debug:
+#        pprint.pp(ctx.__dict__)
 
 
 run.add_command(configs)
 
 
 if __name__ == "__main__":
-    run()
+    run(auto_envvar_prefix="SKELETON")

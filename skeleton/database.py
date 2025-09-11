@@ -1,9 +1,12 @@
 import os
 import sys
 
-import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
+
+from contextlib import contextmanager
 from sqlalchemy.exc import IntegrityError
+from sqlmodel import SQLModel, create_engine
+from sqlmodel import Session as SQLModelSession
 
 from skeleton import console
 
@@ -14,7 +17,7 @@ def add_record(
     debug=False,
 ):
     if debug:
-        console.debug_msg(record)
+        console.debug_msg(f"add_record: {record}")
 
     try:
         db.add(record)
@@ -23,12 +26,12 @@ def add_record(
         console.ok_msg("record added")
     except IntegrityError as exc:
         db.rollback()
-        console.warn_msg(f"rolled back - duplicate record")
+        console.warn_msg(f"rolled back - {exc}")
     return record
 
 
 def build_engine(dsn, **kwargs):
-    engine = sa.create_engine(
+    engine = create_engine(
         dsn,
         connect_args={"check_same_thread": False},
         **kwargs,
@@ -46,6 +49,39 @@ def build_session(engine):
     return Session
 
 
+def commit(db):
+    try:
+        db.commit()
+        console.ok_msg("record deleted")
+    except Exception as exc:
+        db.rollback()
+        console.warn_msg(f"rolled back - db exception: {exc}")
+    return
+
+
+def create_db(debug, dsn):
+    db = next(get_db(debug, dsn))
+    SQLModel.metadata.create_all(bind=db.bind)
+
+
+def delete_record(
+    db,
+    record,
+    debug=False,
+):
+    if debug:
+        console.debug_msg(f"delete_record: {record}")
+
+    try:
+        db.delete(record)
+        db.commit()
+        console.ok_msg("record deleted")
+    except Exception as exc:
+        db.rollback()
+        console.warn_msg(f"rolled back - db exception: {exc}")
+    return
+
+
 def get_db(debug, dsn):
     engine = build_engine(dsn, echo=debug, future=True)
     SessionLocal = build_session(engine)
@@ -56,17 +92,13 @@ def get_db(debug, dsn):
         db.close()
 
 
-def get_dsn(db_name, test):
+def get_dsn(debug, db_name):
     db_dir = f"{os.getcwd()}/db"
-    makecmd = "db"
-    if test:
-        db_name = f"test_{db_name}"
-        makecmd = "test_db"
-    database = f"{db_name}.db"
-    if not os.path.exists(f"{db_dir}/{database}"):
-        sys.exit(f"Database file {db_dir}/{database} not found, run: make {makecmd}")
-
-    return f"sqlite:///{db_dir}/{database}"
+    database = f"{db_dir}/{db_name}.db"
+    dsn = f"sqlite:///{database}"
+    if not os.path.exists(database):
+        create_db(debug, dsn)
+    return dsn
 
 
 def update_record(
@@ -75,7 +107,7 @@ def update_record(
     debug=False,
 ):
     if debug:
-        console.debug_msg(record)
+        console.debug_msg(f"update_record: {record}")
 
     try:
         db.commit()
@@ -85,21 +117,3 @@ def update_record(
         db.rollback()
         console.warn_msg(f"rolled back - db exception: {exc}")
     return record
-
-
-def delete_record(
-    db,
-    record,
-    debug=False,
-):
-    if debug:
-        console.debug_msg(record)
-
-    try:
-        db.delete(record)
-        db.commit()
-        console.ok_msg("record deleted")
-    except Exception as exc:
-        db.rollback()
-        console.warn_msg(f"rolled back - db exception: {exc}")
-    return

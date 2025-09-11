@@ -1,22 +1,18 @@
 """Skeleton Configs CLI."""
 
 from dataclasses import dataclass, field
-import datetime
 import json
 import os
 
-
 import click
 
-from skeleton import database
-from skeleton.configs import console, crud, models, schemas
+from skeleton.configs import console, crud
 
 
 @dataclass()
 class ConfigCmd:
-    configs_db: object = None
+    db: object = None
     debug: bool = False
-    test: bool = False
 
 
 @click.group("configs")
@@ -25,9 +21,8 @@ def configs(ctx):
     """
     Config commands.
     """
-    configs_db = ctx.obj.configs_db
+    db = ctx.obj.db
     debug = ctx.obj.debug
-    test = ctx.obj.test
     pass
 
 
@@ -54,33 +49,24 @@ def configs(ctx):
     type=str,
 )
 @click.pass_obj
-def add_config(ctx_obj, file):
+def add_config(ctx_obj, file, name, value):
     """Add an config to the database."""
 
-    configs_db = ctx_obj.configs_db
+    db = ctx_obj.db
     debug = ctx_obj.debug
-    test = ctx_obj.test
 
     if not (name or file):
         console.exit_msg("A Name/Value pair or File must be provided")
 
     if file:
         config_data = json.load(file)
-        ts = datetime.datetime.strptime(config_data["ts"], "%m/%d/%Y %I:%M %p")
-        config_data["ts"] = ts
     else:
-        ts = datetime.datetime.now().replace(second=0, microsecond=0)
-        config_data = { "name": name, "value": value, "ts": ts }
+        config_data = { "name": name, "value": value }
 
     if debug:
         console.console.print_json(data={"config_data": config_data})
 
-    f = schemas.ConfigAdd(
-        name=str(config_data["name"]),
-        value=str(config_data["value"]),
-        ts=ts,                          # timestamp
-    )
-    crud.add_config(configs_db, debug, f)
+    crud.add_config(db, config_data, debug)
 
 
 @configs.command("list")
@@ -102,14 +88,13 @@ def add_config(ctx_obj, file):
 def list_configs(ctx_obj, minimal, name):
     """List configs in database."""
 
-    configs_db = ctx_obj.configs_db
+    db = ctx_obj.db
     debug = ctx_obj.debug
-    test = ctx_obj.test
 
     if name:
-        configs = crud.get_configs_by_match(configs_db, name)
+        configs = crud.get_configs_by_match(db, name)
     else:
-        configs = crud.get_configs(configs_db)
+        configs = crud.get_configs(db)
 
     if name and not configs:
         console.exit_msg("no matching name found")
@@ -156,26 +141,22 @@ def update_config(ctx_obj, file, config_id, config_name, config_value):
     if not config_id:
         console.exit_msg("Need to provide a config id to update")
 
-    configs_db = ctx_obj.configs_db
+    db = ctx_obj.db
     debug = ctx_obj.debug
-    test = ctx_obj.test
 
     if not (config_name or file):
         console.exit_msg("A Name/Value pair or File must be provided")
 
     if file:
         config_data = json.load(file)
-        ts = datetime.datetime.strptime(config_data["ts"], "%m/%d/%Y %I:%M %p")
-        config_data["ts"] = ts
     else:
-        ts = datetime.datetime.now().replace(second=0, microsecond=0)
-        config_data = { "name": config_name, "value": config_value, "ts": ts }
+        config_data = { "name": config_name, "value": config_value }
 
     if not config_id:
-        config = crud.get_config_by_match(configs_db, config_data["name"])
+        config = crud.get_config_by_match(db, config_data["name"])
         config_id = config.id
     else:
-        config = crud.get_config(configs_db, config_id)
+        config = crud.get_config(db, config_id)
 
     if config:
         if not config_value and config.value:
@@ -188,9 +169,8 @@ def update_config(ctx_obj, file, config_id, config_name, config_value):
     f = schemas.ConfigUpdate(
         name=str(config_data["name"]),
         value=str(config_data["value"]),
-        ts=ts,                          # timestamp
     )
-    crud.update_config(configs_db, debug, config_id, f)
+    crud.update_config(db, debug, config_id, f)
 
 
 @configs.command("delete")
@@ -215,17 +195,16 @@ def delete_config(ctx_obj, config_id, config_name):
     if not config_id and not config_name:
         console.exit_msg("Need to provide either an config id or a name for matching")
 
-    configs_db = ctx_obj.configs_db
+    db = ctx_obj.db
     debug = ctx_obj.debug
-    test = ctx_obj.test
 
     if config_name:
-        config_id = crud.get_config_by_match(configs_db, config_name).id
+        config_id = crud.get_config_by_match(db, config_name).id
 
     if debug:
         console.console.print_json(data={"config_id": config_id})
 
-    crud.delete_config(configs_db, debug, config_id)
+    crud.delete_config(db, debug, config_id)
 
 
 if __name__ == "__main__":

@@ -17,7 +17,7 @@ all: venv install
 
 venv: venv/deps
 
-venv/deps: requirements.txt requirements_api.txt
+venv/deps: requirements.txt
 	test -d venv || $(SYSTEM_PYTHON) -m venv venv
 	. venv/bin/activate
 	$(PYTHON) -m pip install --upgrade pip

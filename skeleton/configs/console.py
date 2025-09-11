@@ -29,7 +29,6 @@ def display_configs_minimal(configs):
     table.add_column("ID", style="bold", width=12, justify="center")
     table.add_column("Name")
     table.add_column("Value")
-    table.add_column("TS")
 
     if not isinstance(configs, list):
         configs = [configs]
@@ -39,7 +38,6 @@ def display_configs_minimal(configs):
             str(config.id),
             config.name,
             config.value,
-            str(config.ts),
         )
 
     console.print(table)

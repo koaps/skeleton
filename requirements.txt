@@ -1,12 +1,10 @@
 alembic >= 1.7.7
 certifi >= 14.05.14
 click >=8.1.2
-pydantic >= 1.9.0
 python_dateutil >= 2.5.3
 rich >= 12.2.0
 setuptools >= 21.0.0
-shortuuid
 six >= 1.10
-sqlalchemy >= 1.4.35
+sqlmodel >= 0.0.16
 urllib3 >= 1.15.1
 wheel

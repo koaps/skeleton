@@ -10,7 +10,6 @@ def add_config(db, debug, config_info: schemas.ConfigAdd):
     db_config = models.Config(
         name=config_info.name,
         value=config_info.value,
-        ts=config_info.ts,
     )
     database.add_record(db, db_config, debug)
     return
@@ -55,7 +54,6 @@ def update_config(db, debug, config_id, config_info: schemas.ConfigUpdate):
         db_config.id = int(config_id)
         db_config.name = config_info.name
         db_config.value = config_info.value
-        db_config.ts = config_info.ts
         database.update_record(db, db_config, debug)
     else:
         console.exit_msg("Config not found")
