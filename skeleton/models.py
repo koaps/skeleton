@@ -1,10 +1,11 @@
-from dataclasses import dataclass, field
-from typing import List, Optional
+from dataclasses import dataclass
+from typing import Optional
 
 from sqlalchemy import UniqueConstraint
-from sqlmodel import Column, Field, SQLModel
+from sqlmodel import Field, SQLModel
 
 metadata = SQLModel.metadata
+
 
 @dataclass
 class Config(SQLModel, table=True):

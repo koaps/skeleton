@@ -35,7 +35,7 @@ venv/test_deps: venv/deps requirements_test.txt
 ## install
 
 install: venv
-	$(PYTHON) -m pip install --no-deps --no-use-pep517 --prefix=venv .
+	$(PYTHON) -m pip install --use-pep517 --prefix=venv .
 
 .PHONY: install
 

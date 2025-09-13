@@ -9,19 +9,23 @@ from skeleton.console import *
 console = Console()
 
 
-def get_content(config):
-    """Extract text from configs dict."""
-    title = "{}".format(config.ts)
-    body = "{} = {}".format(config.name, config.value)
-    return f"[b]{title}[/b]\n[yellow]{body}"
-
-
 def display_configs(configs):
+    table = Table(title="[bold italic]Configs[/]")
+    table.add_column("ID", style="bold", width=12, justify="center")
+    table.add_column("Name", justify="center")
+    table.add_column("Value")
+
     if not isinstance(configs, list):
         configs = [configs]
 
-    config_renderables = [Panel(get_content(config), expand=True) for config in configs]
-    console.print(Columns(config_renderables))
+    for config in configs:
+        table.add_row(
+            str(config.id),
+            config.name,
+            config.value,
+        )
+
+    console.print(table)
 
 
 def display_configs_minimal(configs):

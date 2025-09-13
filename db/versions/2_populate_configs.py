@@ -2,7 +2,7 @@
 
 Revision ID: 2
 Revises: 1
-Create Date: 2023-10-29 14:33:01.488758
+Create Date: 2025-09-13 13:39:07.488758
 
 """
 import datetime
@@ -36,6 +36,7 @@ def upgrade() -> None:
                 )
             )
     op.bulk_insert(Config.__table__, configs)
+
 
 def downgrade() -> None:
     pass

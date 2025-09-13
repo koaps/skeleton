@@ -1,11 +1,12 @@
 """Skeleton CLI."""
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 
 import click
-import pprint
 
-from skeleton import console, database
+# import pprint
+
+from skeleton import database
 from skeleton.database import get_dsn
 
 from skeleton.configs.commands import configs
@@ -16,7 +17,7 @@ from skeleton.configs import crud as configs_crud
 class RunCmd:
     config: object = None
     debug: bool = False
-    db: str
+    db: object = None
 
 
 @click.group("run")
@@ -30,17 +31,18 @@ def run(ctx, config, debug):
     \b
     To manage configs, use `skeleton configs`
     """
-    data_dsn = get_dsn("configs")
+    data_dsn = get_dsn(debug, "configs")
     db = next(database.get_db(debug, data_dsn))
 
     if isinstance(config, int):
         _config = configs_crud.get_config(db, config)
     elif isinstance(config, str):
         _config = configs_crud.get_config_by_name(db, config)
-    else
+    else:
         _config = None
 
     ctx.obj = RunCmd(_config, debug, db)
+
 
 #    if debug:
 #        pprint.pp(ctx.__dict__)

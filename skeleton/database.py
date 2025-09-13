@@ -1,12 +1,9 @@
 import os
-import sys
 
 import sqlalchemy.orm as sa_orm
 
-from contextlib import contextmanager
 from sqlalchemy.exc import IntegrityError
 from sqlmodel import SQLModel, create_engine
-from sqlmodel import Session as SQLModelSession
 
 from skeleton import console
 
@@ -110,6 +107,7 @@ def update_record(
         console.debug_msg(f"update_record: {record}")
 
     try:
+        db.add(record)
         db.commit()
         db.refresh(record)
         console.ok_msg("record updated")

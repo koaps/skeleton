@@ -1,8 +1,7 @@
 """Skeleton Configs CLI."""
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 import json
-import os
 
 import click
 
@@ -61,12 +60,12 @@ def add_config(ctx_obj, file, name, value):
     if file:
         config_data = json.load(file)
     else:
-        config_data = { "name": name, "value": value }
+        config_data = {"name": name, "value": value}
 
     if debug:
         console.console.print_json(data={"config_data": config_data})
 
-    crud.add_config(db, config_data, debug)
+    crud.add_config(db, debug, config_data)
 
 
 @configs.command("list")
@@ -150,7 +149,7 @@ def update_config(ctx_obj, file, config_id, config_name, config_value):
     if file:
         config_data = json.load(file)
     else:
-        config_data = { "name": config_name, "value": config_value }
+        config_data = {"name": config_name, "value": config_value}
 
     if not config_id:
         config = crud.get_config_by_match(db, config_data["name"])
@@ -166,11 +165,7 @@ def update_config(ctx_obj, file, config_id, config_name, config_value):
         console.debug_msg(config_id)
         console.debug_msg(config_data)
 
-    f = schemas.ConfigUpdate(
-        name=str(config_data["name"]),
-        value=str(config_data["value"]),
-    )
-    crud.update_config(db, debug, config_id, f)
+    crud.update_config(db, debug, config_id, config_data)
 
 
 @configs.command("delete")

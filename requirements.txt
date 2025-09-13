@@ -1,10 +1,11 @@
-alembic >= 1.7.7
-certifi >= 14.05.14
-click >=8.1.2
-python_dateutil >= 2.5.3
-rich >= 12.2.0
-setuptools >= 21.0.0
-six >= 1.10
-sqlmodel >= 0.0.16
-urllib3 >= 1.15.1
+alembic
+certifi
+click
+python_dateutil
+rich
+setuptools
+six
+sqlmodel
+textual
+urllib3
 wheel

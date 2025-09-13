@@ -2,39 +2,41 @@
 
 Revision ID: 2
 Revises: 1
-Create Date: 2022-04-26 17:02:01.031834
+Create Date: 2025-09-13 13:39:07.488758
 
 """
-from alembic import op
-from skeleton.configs.models import Config
+import datetime
 import json
 import os
-import sqlalchemy as sa
-import datetime
+
+from typing import Sequence, Union
+
+from alembic import op
+
+from skeleton.models import Config
 
 # revision identifiers, used by Alembic.
-revision = "2"
-down_revision = "1"
-branch_labels = None
-depends_on = None
+revision: str = "2"
+down_revision: Union[str, None] = "1"
+branch_labels: Union[str, Sequence[str], None] = None
+depends_on: Union[str, Sequence[str], None] = None
 
 
-def upgrade():
+def upgrade() -> None:
     configs = []
-    for config_file in sorted(os.listdir("json/test_configs")):
-        with open(os.path.join("json/test_configs", config_file), "r") as f:
+    for config_file in sorted(os.listdir("json/configs")):
+        with open(os.path.join("json/configs", config_file), "r") as f:
             config_data = json.load(f)
-            ts = datetime.datetime.strptime(config_data["ts"], "%m/%d/%Y %I:%M %p")
             configs.append(
                 dict(
                     id=None,
                     name=config_data["name"],
                     value=config_data["value"],
-                    ts=ts,
+                    ts=datetime.datetime.now().replace(second=0, microsecond=0),
                 )
             )
     op.bulk_insert(Config.__table__, configs)
 
 
-def downgrade():
+def downgrade() -> None:
     pass
